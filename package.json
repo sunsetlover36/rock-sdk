@@ -1,0 +1,34 @@
+{
+  "name": "@rock-runtime/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript client SDK for the ROCK runtime WebSocket protocol",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run check && npm run build"
+  },
+  "keywords": ["rock", "websocket", "multiplayer", "runtime"],
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruburi/rock-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ruburi/rock-sdk/issues"
+  },
+  "homepage": "https://github.com/ruburi/rock-sdk#readme",
+  "devDependencies": {
+    "typescript": "5.7.3"
+  }
+}
