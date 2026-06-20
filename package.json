@@ -1,6 +1,6 @@
 {
   "name": "@rock-runtime/sdk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TypeScript client SDK for the ROCK runtime WebSocket protocol",
   "type": "module",
   "main": "./dist/index.js",
@@ -22,12 +22,12 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ruburi/rock-sdk.git"
+    "url": "git+https://github.com/sunsetlover36/rock-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/ruburi/rock-sdk/issues"
+    "url": "https://github.com/sunsetlover36/rock-sdk/issues"
   },
-  "homepage": "https://github.com/ruburi/rock-sdk#readme",
+  "homepage": "https://github.com/sunsetlover36/rock-sdk#readme",
   "devDependencies": {
     "typescript": "5.7.3"
   }
