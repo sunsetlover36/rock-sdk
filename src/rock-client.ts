@@ -6,13 +6,15 @@ import type {
   OutgoingPacket,
   RequestOptions,
   RockClientOptions,
-  SignalData,
+  SignalPayload,
+  RpcParams,
+  RpcResponse,
 } from "./types.js";
 
 type Listener<T> = (value: T) => void;
 type PendingRequest = {
   response: string;
-  resolve: (value: unknown) => void;
+  resolve: (value: SignalPayload) => void;
   reject: (reason: Error) => void;
   timer: ReturnType<typeof setTimeout>;
 };
@@ -78,14 +80,14 @@ export class RockClient {
     };
   }
 
-  onSignal<T extends SignalData = SignalData>(
+  onSignal<T extends SignalPayload = SignalPayload>(
     name: string,
     listener: Listener<T>,
   ): () => void {
     return this.on(`signal:${name}`, listener);
   }
 
-  sendSignal(name: string, data: SignalData = {}): boolean {
+  sendSignal(name: string, data: SignalPayload = null): boolean {
     return this.send({ t: "signal", d: { name, data } });
   }
   sendInput(id: number, data: JsonValue): boolean {
@@ -94,7 +96,7 @@ export class RockClient {
 
   request<T = unknown>(
     name: string,
-    data: SignalData = {},
+    data: RpcParams = {},
     options: RequestOptions = {},
   ): Promise<T> {
     const id = requestId();
@@ -164,11 +166,11 @@ export class RockClient {
     if (!pending || pending.response !== signal.name) return;
     clearTimeout(pending.timer);
     this.pending.delete(id!);
-    if ((signal.data as { ok?: boolean }).ok === false)
+    if (isRpcResponse(signal.data) && signal.data.ok === false)
       pending.reject(
         new Error(
           String(
-            (signal.data as { error?: string }).error ?? "ROCK request failed",
+            signal.data.error ?? "ROCK request failed",
           ),
         ),
       );
@@ -224,11 +226,13 @@ export class RockClient {
 
 export const createRockClient = (options: RockClientOptions) =>
   new RockClient(options);
-const readRequestId = (data: SignalData): string | undefined =>
-  typeof data.request_id === "string" ? data.request_id : undefined;
-const unwrapResponse = (payload: unknown): unknown => {
-  const data = payload as { data?: unknown };
-  return data && typeof data === "object" && "data" in data
-    ? data.data
-    : payload;
-};
+const isObject = (value: JsonValue): value is Record<string, JsonValue> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+const readRequestId = (data: SignalPayload): string | undefined =>
+  isObject(data) && typeof data.request_id === "string" ? data.request_id : undefined;
+const isRpcResponse = (
+  data: SignalPayload,
+): data is RpcResponse & Record<string, JsonValue> =>
+  isObject(data) && typeof data.request_id === "string";
+const unwrapResponse = (payload: SignalPayload): SignalPayload =>
+  isRpcResponse(payload) && "data" in payload ? payload.data ?? null : payload;

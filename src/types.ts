@@ -5,9 +5,17 @@ export type JsonValue =
   | string
   | JsonValue[]
   | { [key: string]: JsonValue };
-export type SignalData = Record<string, JsonValue>;
+export type SignalPayload = JsonValue;
+export type RpcParams = Record<string, JsonValue>;
 
-export interface RockSignal<T extends SignalData = SignalData> {
+export interface RpcResponse<T extends JsonValue = JsonValue> {
+  request_id: string;
+  ok?: boolean;
+  data?: T;
+  error?: string;
+}
+
+export interface RockSignal<T extends SignalPayload = SignalPayload> {
   name: string;
   data: T;
 }

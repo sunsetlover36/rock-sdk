@@ -175,7 +175,7 @@ const profile = await rock.request(
 );
 ```
 
-Requests reject on timeout, disconnect, failed send, or explicit `{ ok: false, error }` response data.
+Requests reject on timeout, disconnect, failed send, or explicit `{ ok: false, error }` response data. A request is a convention between client and gamemode: the response must use the same signal name (or `options.response`) and echo the generated `request_id`.
 
 ```ts
 try {
@@ -188,7 +188,7 @@ try {
 By default, if the response payload contains a `data` field, the SDK unwraps it:
 
 ```ts
-// Response signal data:
+// Response signal data (the RPC envelope):
 {
   ok: true,
   data: {
@@ -211,6 +211,8 @@ const raw = await rock.request("PeopleProfile", { fid: 3 }, {
   unwrap: false,
 });
 ```
+
+Regular signal payloads are not RPC envelopes and may be any JSON value (object, array, string, boolean, or `null`). `onSignal()` receives that exact payload. `request()` accepts an object because it has to add `request_id`; it unwraps only the explicit envelope above — never an accidental `data.data` shape.
 
 ## Reconnects
 
